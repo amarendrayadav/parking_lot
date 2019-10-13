@@ -4,11 +4,6 @@ public class Car {
     private String color;
     private String registrationNo;
 
-    public Car(String color, String registrationNo) {
-        this.color = color;
-        this.registrationNo = registrationNo;
-    }
-
     public String getColor() {
         return color;
     }

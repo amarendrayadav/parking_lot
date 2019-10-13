@@ -5,6 +5,7 @@ import com.problem.dataaccess.EmptyObject;
 import com.problem.dataaccess.Ticket;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,14 +39,12 @@ public class ParkingService {
 
     public void createParkingLot(int parkingSlots) {
         // initialized each slot with empty object
-//        this.cars = new ArrayList<>(parkingSlots);
         for (int i = 0; i < parkingSlots; i++) {
             this.cars.add(emptyObject);
         }
         System.out.println("Created a parking lot with " + parkingSlots + " slots");
     }
 
-    //parkNewEntry
     public void parkNewEntry(Car car) {
         int parkingSlot = 0;
         for (Car c : cars) {
@@ -54,7 +53,7 @@ public class ParkingService {
             }
             ++parkingSlot;
         }
-        if (parkingSlot < getCars().size()) {
+        if (parkingSlot < cars.size()) {
             this.cars.set(parkingSlot, car);
             // generate ticket
             Ticket ticket = new Ticket();
@@ -90,7 +89,10 @@ public class ParkingService {
 
     //getCarsByColor
     public List<String> getCarsRegByColor(String color) {
-        List<Car> carList = cars.stream().filter(c -> c.getColor().equals(color)).collect(Collectors.toList());
+        List<Car> carList = cars.stream().
+                filter(c -> Objects.nonNull(c.getColor())).
+                filter(c -> c.getColor().equals(color)).
+                collect(Collectors.toList());
         return carList.stream().map(Car::getRegistrationNo).collect(Collectors.toList());
     }
 
@@ -113,6 +115,6 @@ public class ParkingService {
                 stream().
                 filter(ticket -> ticket.getCar().getColor().equals(color)).
                 collect(Collectors.toList());
-        return ticketByColor.stream().map(t -> t.getSlotNo()).collect(Collectors.toList());
+        return ticketByColor.stream().map(Ticket::getSlotNo).collect(Collectors.toList());
     }
 }

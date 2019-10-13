@@ -23,19 +23,20 @@ public class StartUp {
     private static final String SLOT_NOS_BY_COLOR = "slot_numbers_for_cars_with_colour";
     private static final String SLOT_NOS_BY_REG_NO = "slot_number_for_registration_number";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         System.out.println("Press 1. for input from inputFile");
         System.out.println("Press 2. for Command Line Interaction");
         Scanner sc = new Scanner(System.in);
         String commands = "";
+        final ParkingService service = new ParkingService();
         while (true) {
             int choice = sc.nextInt();
             switch (choice) {
                 case 1:
-                    inputFromFile();
+                    inputFromFile(service);
                     break;
                 case 2:
-                    final ParkingService service = new ParkingService();
+                    commands = sc.next();
                     runCommands(commands, service);
                     break;
                 default:
@@ -45,11 +46,10 @@ public class StartUp {
         }
     }
 
-    private static void inputFromFile() {
+    private static void inputFromFile(final ParkingService service) {
         //"C:\\amrendra\\projects\\parking_lot\\bin\\parking_lot_file_inputs";
         String inputFile = new File("").getAbsolutePath() + "\\bin\\parking_lot_file_inputs.txt";
         try (Stream<String> commandStream = Files.lines(Paths.get(inputFile))) {
-            final ParkingService service = new ParkingService();
             commandStream.forEach(line -> {
                 runCommands(line, service);
             });

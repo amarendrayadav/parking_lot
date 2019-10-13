@@ -19,4 +19,12 @@ public class Car {
     public void setRegistrationNo(String registrationNo) {
         this.registrationNo = registrationNo;
     }
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "color='" + color + '\'' +
+                ", registrationNo='" + registrationNo + '\'' +
+                '}';
+    }
 }

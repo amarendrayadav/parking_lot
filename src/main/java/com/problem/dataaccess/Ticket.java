@@ -7,6 +7,10 @@ public class Ticket {
     private Car car;
     private Integer slotNo;
 
+    public Ticket() {
+        this.ticketId = UUID.randomUUID();
+    }
+
     public UUID getTicketId() {
         return ticketId;
     }

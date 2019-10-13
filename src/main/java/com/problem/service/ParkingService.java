@@ -4,15 +4,32 @@ import com.problem.dataaccess.Car;
 import com.problem.dataaccess.EmptyObject;
 import com.problem.dataaccess.Ticket;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ParkingService {
+
     private List<Car> cars;
     private Set<Ticket> tickets;
+
+    public List<Car> getCars() {
+        return cars;
+    }
+
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
+    }
+
+    public Set<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(Set<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+
     final EmptyObject emptyObject = new EmptyObject();
 
     private static void accept(Ticket ticket) {
@@ -21,9 +38,9 @@ public class ParkingService {
 
     public void createParkingLot(int parkingSlots) {
         // initialized each slot with empty object
-        cars = new ArrayList<>(parkingSlots);
+//        this.cars = new ArrayList<>(parkingSlots);
         for (int i = 0; i < parkingSlots; i++) {
-            cars.add(emptyObject);
+            this.cars.add(emptyObject);
         }
         System.out.println("Created a parking lot with " + parkingSlots + " slots");
     }
@@ -35,15 +52,19 @@ public class ParkingService {
             if (c instanceof EmptyObject) {
                 break;
             }
-            parkingSlot++;
+            ++parkingSlot;
         }
-        this.cars.set(parkingSlot, car);
-
-        Ticket ticket = new Ticket();
-        ticket.setCar(car);
-        ticket.setSlotNo(parkingSlot);
-        tickets.add(ticket);
-        System.out.println("Allocated slot number: " + parkingSlot);
+        if (parkingSlot < getCars().size()) {
+            this.cars.set(parkingSlot, car);
+            // generate ticket
+            Ticket ticket = new Ticket();
+            ticket.setCar(car);
+            ticket.setSlotNo(parkingSlot);
+            tickets.add(ticket);
+            System.out.println("Allocated slot number: " + parkingSlot);
+        } else {
+            System.out.println("Sorry, parking lot is full");
+        }
     }
 
     //removeCarFromParking
@@ -92,6 +113,6 @@ public class ParkingService {
                 stream().
                 filter(ticket -> ticket.getCar().getColor().equals(color)).
                 collect(Collectors.toList());
-        return ticketByColor.stream().map(t->t.getSlotNo()).collect(Collectors.toList());
+        return ticketByColor.stream().map(t -> t.getSlotNo()).collect(Collectors.toList());
     }
 }

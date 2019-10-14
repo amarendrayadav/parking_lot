@@ -3,11 +3,10 @@ package com.problem;
 import com.problem.dataaccess.Car;
 import com.problem.service.ParkingService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class StartUp {
 
@@ -21,33 +20,40 @@ public class StartUp {
     private static final String EXIT = "exit";
 
     public static void main(String[] args) {
-        System.out.println("Press 1. for input from inputFile");
-        System.out.println("Press 2. for Command Line Interaction");
-        System.out.println("Press 0. to stop app");
-        final Scanner sc = new Scanner(System.in);
+        StartUp startUp = new StartUp();
         final ParkingService service = new ParkingService();
-        boolean stopApp = false;
-        while (!stopApp) {
-            int choice = sc.nextInt();
-            switch (choice) {
-                case 0:
-                    stopApp = true;
-                    System.out.println("Exiting App...");
-                    break;
-                case 1:
-                    inputFromFile(service);
-                    break;
-                case 2:
-                    interactiveCommands(sc, service);
-                    break;
-                default:
-                    System.out.println("Illegal Option");
-                    break;
+        String inputFile = "parking_lot_file_inputs";
+        if (args.length > 0) {
+            inputFile = args[0];
+            startUp.inputFromFile(service, inputFile);
+        } else {
+            System.out.println("Press 0. to stop app");
+            System.out.println("Press 1. for input from inputFile");
+            System.out.println("Press 2. for Command Line Interaction");
+            final Scanner sc = new Scanner(System.in);
+            boolean stopApp = false;
+            while (!stopApp) {
+                int choice = sc.nextInt();
+                switch (choice) {
+                    case 0:
+                        stopApp = true;
+                        System.out.println("Exiting App...");
+                        break;
+                    case 1:
+                        startUp.inputFromFile(service, inputFile);
+                        break;
+                    case 2:
+                        interactiveCommands(service);
+                        break;
+                    default:
+                        System.out.println("Illegal Option");
+                        break;
+                }
             }
         }
     }
 
-    private static void interactiveCommands(Scanner sca, ParkingService service) {
+    private static void interactiveCommands(ParkingService service) {
         System.out.println("Running CLI!");
         Scanner sc = new Scanner(System.in);
         while (true) {
@@ -58,14 +64,20 @@ public class StartUp {
             }
             runCommands(command, service);
         }
+        sc.close();
     }
 
-    private static void inputFromFile(final ParkingService service) {
-        final String inputFile = "bin/parking_lot_file_inputs";
-        try (Stream<String> commandStream = Files.lines(Paths.get(inputFile))) {
-            commandStream.forEach(line -> {
+    private void inputFromFile(final ParkingService service, final String inputFile) {
+        try {
+            final BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().
+                    getClassLoader().
+                    getResourceAsStream(inputFile))));
+            String line;
+            while (true) {
+                if ((line = br.readLine()) == null) break;
                 runCommands(line, service);
-            });
+            }
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

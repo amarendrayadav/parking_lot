@@ -55,7 +55,7 @@ public class ParkingServiceTest {
 
     @Test
     public void getCarsRegByColorTest() {
-        String color = "Black";
+        final String color = "Black";
         createDummyEntry();
         List<String> cars = serviceTester.getCarsRegByColor(color);
         assertEquals(1, cars.size());
@@ -67,6 +67,4 @@ public class ParkingServiceTest {
         car.setColor("Black");
         serviceTester.parkNewEntry(car);
     }
-
-
 }

@@ -3,14 +3,10 @@ package com.problem;
 import com.problem.dataaccess.Car;
 import com.problem.service.ParkingService;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class StartUp {
@@ -22,22 +18,27 @@ public class StartUp {
     private static final String REGISTRATION_NOS_BY_COLOR = "registration_numbers_for_cars_with_colour";
     private static final String SLOT_NOS_BY_COLOR = "slot_numbers_for_cars_with_colour";
     private static final String SLOT_NOS_BY_REG_NO = "slot_number_for_registration_number";
+    private static final String EXIT = "exit";
 
     public static void main(String[] args) {
         System.out.println("Press 1. for input from inputFile");
         System.out.println("Press 2. for Command Line Interaction");
-        Scanner sc = new Scanner(System.in);
-        String commands = "";
+        System.out.println("Press 0. to stop app");
+        final Scanner sc = new Scanner(System.in);
         final ParkingService service = new ParkingService();
-        while (true) {
+        boolean stopApp = false;
+        while (!stopApp) {
             int choice = sc.nextInt();
             switch (choice) {
+                case 0:
+                    stopApp = true;
+                    System.out.println("Exiting App...");
+                    break;
                 case 1:
                     inputFromFile(service);
                     break;
                 case 2:
-                    commands = sc.next();
-                    runCommands(commands, service);
+                    interactiveCommands(sc, service);
                     break;
                 default:
                     System.out.println("Illegal Option");
@@ -46,9 +47,21 @@ public class StartUp {
         }
     }
 
+    private static void interactiveCommands(Scanner sca, ParkingService service) {
+        System.out.println("Running CLI!");
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            String command = sc.nextLine();
+            if (Objects.equals(command, "Exit")) {
+                System.out.println("Exiting CLI...");
+                break;
+            }
+            runCommands(command, service);
+        }
+    }
+
     private static void inputFromFile(final ParkingService service) {
-        //"C:\\amrendra\\projects\\parking_lot\\bin\\parking_lot_file_inputs";
-        String inputFile = new File("").getAbsolutePath() + "\\bin\\parking_lot_file_inputs.txt";
+        final String inputFile = "bin/parking_lot_file_inputs";
         try (Stream<String> commandStream = Files.lines(Paths.get(inputFile))) {
             commandStream.forEach(line -> {
                 runCommands(line, service);
@@ -82,18 +95,21 @@ public class StartUp {
                     service.getStatus();
                     break;
                 case REGISTRATION_NOS_BY_COLOR:
-                    List<String> regNos = service.getCarsRegByColor(commandArray[1]);
+                    final List<String> regNos = service.getCarsRegByColor(commandArray[1]);
                     System.out.println(regNos);
                     break;
                 case SLOT_NOS_BY_COLOR:
-                    List<Integer> slots = service.allSlotsByColor(commandArray[1]);
+                    final List<Integer> slots = service.allSlotsByColor(commandArray[1]);
                     System.out.println(slots);
                     break;
                 case SLOT_NOS_BY_REG_NO:
                     service.getSlotByRegistration(commandArray[1]);
                     break;
+                case EXIT:
+                    System.out.println("Exiting...");
+                    break;
                 default:
-                    throw new IllegalStateException("Not Supported");
+                    throw new IllegalStateException("Command Not Supported");
             }
         }
     }
